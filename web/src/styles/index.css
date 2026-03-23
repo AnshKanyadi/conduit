@@ -1,0 +1,424 @@
+/* ============================================================
+   Conduit — Design System
+   Apple-inspired dark professional aesthetic.
+   No gradients, no shadows, no noise. Just space and type.
+   ============================================================ */
+
+/* ---- Custom properties ------------------------------------ */
+:root {
+  --bg:             #000000;
+  --surface-1:      #111111;   /* cards, modals */
+  --surface-2:      #1c1c1e;   /* inputs, secondary surfaces */
+  --surface-3:      #2c2c2e;   /* hover states */
+  --border:         rgba(255, 255, 255, 0.08);
+  --border-strong:  rgba(255, 255, 255, 0.14);
+
+  --text-primary:   #f5f5f7;   /* Apple near-white */
+  --text-secondary: #86868b;   /* Apple secondary gray */
+  --text-tertiary:  #48484a;   /* very dim */
+
+  --accent:         #0071e3;   /* macOS button blue */
+  --accent-hover:   #0077ed;
+  --accent-light:   rgba(0, 113, 227, 0.12);
+
+  --green:          #30d158;   /* Apple success */
+  --red:            #ff453a;   /* Apple danger */
+  --yellow:         #ff9f0a;   /* Apple warning */
+  --blue:           #0a84ff;   /* Apple info / iOS blue */
+
+  --font-ui:        -apple-system, BlinkMacSystemFont, "SF Pro Text",
+                    "Helvetica Neue", Arial, sans-serif;
+  --font-mono:      "SF Mono", "JetBrains Mono", "Fira Code",
+                    "Cascadia Code", "Menlo", monospace;
+
+  --topbar-height:  44px;
+  --radius-sm:      6px;
+  --radius-md:      10px;
+  --radius-lg:      14px;
+}
+
+/* ---- Reset ------------------------------------------------ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---- App shell -------------------------------------------- */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg);
+}
+
+/* ---- Top bar ---------------------------------------------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--topbar-height);
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar-wordmark {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.session-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.session-badge:hover {
+  background: var(--surface-3);
+  border-color: var(--border-strong);
+}
+
+.session-badge:active {
+  opacity: 0.7;
+}
+
+.session-badge-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+
+.session-badge-id {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.session-badge-copy {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.session-badge:hover .session-badge-copy {
+  opacity: 1;
+}
+
+/* Status indicator */
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot--idle         { background: var(--text-tertiary); }
+.status-dot--connecting   { background: var(--yellow); animation: pulse 1.2s ease infinite; }
+.status-dot--handshaking  { background: var(--blue); animation: pulse 0.8s ease infinite; }
+.status-dot--connected    { background: var(--green); }
+.status-dot--disconnected { background: var(--red); }
+
+.status-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* ---- Terminal wrapper ------------------------------------- */
+.terminal-wrapper {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+.terminal-container {
+  width: 100%;
+  height: 100%;
+  padding: 12px 16px;
+}
+
+/* Override xterm.js defaults to fill the container cleanly */
+.terminal-container .xterm {
+  height: 100%;
+}
+.terminal-container .xterm-viewport {
+  overflow-y: hidden !important;
+}
+
+/* ---- Connect overlay -------------------------------------- */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  z-index: 10;
+  /* Subtle fade-in */
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+  max-width: 340px;
+  padding: 0 24px;
+}
+
+.overlay-wordmark {
+  font-size: 28px;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.overlay-tagline {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  letter-spacing: 0.02em;
+  margin-top: -24px; /* pull up toward wordmark */
+}
+
+.overlay-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.overlay-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.overlay-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.overlay-input:focus {
+  border-color: var(--accent);
+  background: var(--surface-1);
+}
+
+/* Button row */
+.overlay-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  border: none;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s ease, background 0.15s ease;
+  outline: none;
+}
+
+.btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.btn--primary:active:not(:disabled) {
+  opacity: 0.85;
+}
+
+.btn--secondary {
+  background: var(--surface-2);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.btn--secondary:hover:not(:disabled) {
+  background: var(--surface-3);
+  border-color: var(--border-strong);
+}
+
+.btn--secondary:active:not(:disabled) {
+  opacity: 0.7;
+}
+
+.btn--danger {
+  background: transparent;
+  color: var(--red);
+  border: 1px solid rgba(255, 69, 58, 0.25);
+}
+
+.btn--danger:hover:not(:disabled) {
+  background: rgba(255, 69, 58, 0.08);
+  border-color: rgba(255, 69, 58, 0.45);
+}
+
+/* Divider */
+.overlay-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.overlay-divider::before,
+.overlay-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.overlay-divider-text {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+/* Error/status message under the form */
+.overlay-message {
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.overlay-message--error {
+  color: var(--red);
+}
+
+.overlay-message--info {
+  color: var(--text-secondary);
+}
+
+/* Disconnected state: session chip at top of overlay */
+.overlay-session-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 20px; /* pill */
+}
+
+.overlay-session-hint-label {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.overlay-session-hint-id {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* ---- Copied toast ----------------------------------------- */
+.copied-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  padding: 8px 16px;
+  background: var(--surface-1);
+  border: 1px solid var(--border-strong);
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  pointer-events: none;
+  animation: toastIn 0.2s ease, toastOut 0.2s ease 1.3s forwards;
+  z-index: 100;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes toastOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}

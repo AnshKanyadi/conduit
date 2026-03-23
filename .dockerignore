@@ -1,0 +1,9 @@
+# Keep Docker build context small — only Go source needed for the server image.
+web/
+deploy/
+docs/
+.git/
+.github/
+*.md
+Makefile
+docker-compose.yml

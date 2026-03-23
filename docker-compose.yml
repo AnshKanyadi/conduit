@@ -1,0 +1,69 @@
+---
+# Local development stack — starts etcd, the Conduit server, and the frontend.
+#
+# Usage:
+#   docker compose up --build          # build images and start everything
+#   docker compose up --build server   # rebuild only the server
+#   docker compose logs -f server      # stream server logs
+#
+# Ports:
+#   http://localhost:3000   — frontend (proxies /ws to server)
+#   http://localhost:8080   — server directly (WebSocket + /metrics)
+#   http://localhost:2379   — etcd client API (for debugging)
+
+services:
+
+  # ---- etcd ------------------------------------------------------------------
+  etcd:
+    image: bitnami/etcd:3.5
+    restart: unless-stopped
+    environment:
+      ALLOW_NONE_AUTHENTICATION: "yes"
+    ports:
+      - "2379:2379"
+    healthcheck:
+      test: ["CMD", "etcdctl", "endpoint", "health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - etcd_data:/bitnami/etcd
+
+  # ---- Conduit server --------------------------------------------------------
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      CONDUIT_DEV:             "1"
+      CONDUIT_ETCD_ENDPOINTS:  etcd:2379
+      CONDUIT_NODE_ID:         node-1
+      CONDUIT_NODE_ADDR:       server:8080
+      # CONDUIT_OTLP_ENDPOINT: otel-collector:4317  # uncomment to enable tracing
+    depends_on:
+      etcd:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/metrics"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ---- Frontend (nginx) -------------------------------------------------------
+  frontend:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    environment:
+      CONDUIT_UPSTREAM: server:8080
+    depends_on:
+      - server
+
+volumes:
+  etcd_data:
