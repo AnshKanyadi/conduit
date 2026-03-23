@@ -1,6 +1,6 @@
 # Conduit
 
-A distributed terminal collaboration engine. Open a shell session, share the session ID, and anyone with the URL gets a live synchronized view — no agents, no screen recording, no latency surprises.
+A distributed terminal collaboration engine. Open a shell session, share the session ID, and anyone with the URL gets a live synchronized view: no agents, no screen recording, no latency surprises.
 
 Built in Go from scratch, one layer at a time.
 
